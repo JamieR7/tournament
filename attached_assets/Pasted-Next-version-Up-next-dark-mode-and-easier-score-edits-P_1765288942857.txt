@@ -1,0 +1,96 @@
+Next version – “Up next”, dark mode, and easier score edits
+
+Please keep the existing 8‑team, 2‑court, 2‑group + finals structure, auto‑advance timer, standings, and celebration exactly as they are.
+
+Now add only the following features.
+
+1. Per‑court “Up Next” display
+For each court card:
+
+Maintain a court queue listing all game IDs for that court in order:
+
+js
+courtQueues[courtId] = [gameIdRound1, gameIdRound2, ...];
+currentIndex[courtId] // index of the game currently on that court
+On the court card, under the current matchup, add:
+
+Label: “Up next”.
+
+If courtQueues[courtId][currentIndex + 1] exists:
+
+Show the next game’s teams: Team X vs Team Y.
+
+If there is no further game on that court:
+
+Show “No more games on this court”.
+
+When rounds advance (manually or via auto‑advance):
+
+Increment currentIndex[courtId] for each court that has a game in the new round.
+
+Recompute “Up next” purely from courtQueues[courtId][currentIndex + 1].
+
+Do not search through all games to find “next”; the queue + index must be the single source of truth to avoid conflicts.
+
+2. Easier score editing in Fixtures (up/down arrows)
+In the Fixtures table, make score adjustments quicker:
+
+For every game row, for both Score A and Score B:
+
+Keep the current score value.
+
+Add two small buttons/icons next to each score: ▲ and ▼ (or + and –).
+
+Behaviour:
+
+▲ increments that team’s score by 1.
+
+▼ decrements by 1, but never below 0.
+
+On each click:
+
+Update the corresponding game object in games[].
+
+Immediately refresh:
+
+Court displays (if that game is currently on a court).
+
+Group standings.
+
+Final standings (including final 1–8 table).
+
+This must work for all games, including finished ones, so referees can correct past scores at any time.
+
+3. Light/Dark mode toggle
+Add a global theme toggle in the header:
+
+A switch or button (e.g. “Light / Dark” or sun/moon icon).
+
+Implement via body classes:
+
+css
+body.light { ... }  // current light theme
+body.dark  { ... }  // new dark theme
+Dark mode guidelines:
+
+Dark navy background.
+
+Light/off‑white text.
+
+Keep the existing dark‑blue / red / orange‑yellow accents, but ensure good contrast on dark background (e.g., adjust shades if needed).
+
+The toggle should:
+
+Apply instantly (no page reload).
+
+Affect all components: timer area, courts, fixtures, standings, celebration overlay.
+
+Please implement only:
+
+Per‑court “Up next” built from a court queue and index,
+
+Up/down arrow controls for scores in the Fixtures table, and
+
+Light/Dark mode toggle.
+
+Do not alter any other scheduling, timer, or standings logic.

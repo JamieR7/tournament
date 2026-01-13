@@ -1,0 +1,209 @@
+Add variable court count (1–4 courts) with conflict-free scheduling
+
+Please extend the setup to allow choosing 1, 2, 3, or 4 courts while maintaining the existing conflict-free scheduling logic.
+
+1. Setup panel: Court count selector
+Add a "Number of courts" dropdown or button group in the setup area:
+
+Options: 1, 2, 3, or 4
+
+Default: 2
+
+Below that, show the court name inputs:
+
+If 1 court selected → show 1 name input
+
+If 2 courts → show 2 name inputs
+
+If 3 courts → show 3 name inputs
+
+If 4 courts → show 4 name inputs
+
+Default names: "Court 1", "Court 2", etc. (user can customize).
+
+2. Scheduling logic: respect court count
+You already have round-based scheduling that ensures no team appears twice in the same round.
+
+Now adjust it to:
+
+Build rounds with up to courtCount games per round:
+
+If 1 court: max 1 game per round
+
+If 2 courts: max 2 games per round
+
+If 3 courts: max 3 games per round
+
+If 4 courts: max 4 games per round
+
+Within each round, maintain the existing rule:
+
+No team appears more than once in that round
+
+Use the same greedy algorithm you already have:
+
+Start a new round
+
+Keep a set of teams used in this round
+
+Add games to the round (up to courtCount) where neither team is already used
+
+Move to next round when full or no valid games remain
+
+Assign games to specific courts within each round:
+
+Round 1, Game 1 → Court 1
+
+Round 1, Game 2 → Court 2
+
+Round 1, Game 3 → Court 3 (if 3+ courts)
+
+Round 1, Game 4 → Court 4 (if 4 courts)
+
+And so on for all rounds
+
+Build court queues as you already do:
+
+js
+courtQueues[courtId] = [list of game IDs for that court]
+currentIndex[courtId] = 0
+This ensures each court has its own independent queue and "Up next" works correctly.
+
+3. Validation (critical)
+After building the schedule, run the existing validation:
+
+For every round:
+
+Check that no team ID appears more than once
+
+If a conflict is found, show an error and do not start
+
+This validation must pass for all court counts before the tournament can begin.
+
+4. UI layout: responsive court grid
+Display courts in a responsive grid:
+
+1 court: single centered card
+
+2 courts: side-by-side (existing layout)
+
+3 courts: 3 cards in a row (or 2 on top, 1 below if narrow screen)
+
+4 courts: 2×2 grid or 4 in a row on wide screens
+
+Use CSS grid or flexbox with wrapping:
+
+css
+.courts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  max-width: 100%;
+}
+Each court card should show:
+
+Custom court name
+
+Current game (teams + scores + +/– buttons)
+
+"Up next" for that court
+
+5. Timer and round advancement
+The central timer controls all courts in the current round:
+
+When timer hits 0 (or manual "Next Round"):
+
+Mark all games in the current round as finished
+
+Advance currentIndex[courtId] for each court that has a next game
+
+Load the next round's games onto all courts
+
+Reset timer and restart (if auto-advance enabled)
+
+Some courts may finish their queue before others (e.g., with 4 courts and 15 total games, some courts will be idle in the last rounds). Show "No more games on this court" when a court's queue is exhausted.
+
+6. Finish-time calculation adjusts automatically
+When calculating game duration:
+
+js
+totalSeconds = (finishTime - startTime) / 1000
+roundCount = /* total number of rounds based on courtCount */
+gameDurationSeconds = totalSeconds / roundCount
+More courts = fewer rounds = longer games for the same finish time.
+
+7. Works for all formats and team counts
+This must work for:
+
+4 teams (6 games total):
+
+1 court: 6 rounds
+
+2 courts: 3 rounds
+
+3 courts: 2 rounds
+
+4 courts: 2 rounds (some courts idle)
+
+6 teams (15 games):
+
+1 court: 15 rounds
+
+2 courts: 8 rounds
+
+3 courts: 5 rounds
+
+4 courts: 4 rounds
+
+8 teams Round Robin (28 games):
+
+1 court: 28 rounds
+
+2 courts: 14 rounds
+
+3 courts: 10 rounds
+
+4 courts: 7 rounds
+
+8 teams Group Stage (varies by finals):
+
+Adjust finals scheduling similarly
+
+8. Keep all existing features
+Auto-advance
+
+Manual "Next Round" with confirmation
+
+Score editing (court +/– and fixtures table arrows)
+
+Per-court "Up next"
+
+Standings (group or league)
+
+Final standings
+
+Dark mode
+
+Custom team names
+
+Celebration overlay
+
+Please implement:
+
+Court count selector (1–4)
+
+Dynamic court name inputs based on count
+
+Scheduling that respects court count and prevents team conflicts
+
+Court queues and "Up next" for all courts
+
+Responsive court grid layout
+
+Timer/round advancement that handles variable courts
+
+Finish-time calculation that adapts to court count
+
+Validation that ensures no team plays on multiple courts simultaneously
+
+Critical: The existing conflict-prevention logic must work perfectly with 1–4 courts. Test with console logging or fixtures table review to ensure no team ever appears twice in the same round

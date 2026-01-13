@@ -1,0 +1,92 @@
+Clarify who plays who in semi‑finals and placement games
+
+The current app has the correct structure (groups, semis, placement games, final) but it is not clear in the UI who is playing whom and why.
+
+Please add clear labels and explanations without changing the underlying schedule logic.
+
+1. Explain qualification in the UI
+Under or above the fixtures table, add a small static “Finals rules” box:
+
+For this fixed 8‑team format (2 groups of 4), display text like:
+
+“SF1: 1st Group A vs 2nd Group B”
+
+“SF2: 1st Group B vs 2nd Group A”
+
+“5th/6th: 3rd Group A vs 3rd Group B”
+
+“7th/8th: 4th Group A vs 4th Group B”
+
+“3rd/4th: Loser SF1 vs Loser SF2”
+
+“Final: Winner SF1 vs Winner SF2”
+
+This is just explanatory text; it does not affect logic, but helps users understand the structure.
+
+2. Label each finals game by its rule
+In the fixtures table and on the court cards for all non‑group games (stage ≠ ‘group’):
+
+Add a “Match label” like:
+
+“Semi‑final 1 (1A vs 2B)”
+
+“Semi‑final 2 (1B vs 2A)”
+
+“5th/6th Playoff (3A vs 3B)”
+
+“7th/8th Playoff (4A vs 4B)”
+
+“3rd/4th Playoff (L SF1 vs L SF2)”
+
+“Final (W SF1 vs W SF2)”
+
+Implementation suggestion:
+
+In each game object, include fields like:
+
+js
+stage: 'group' | 'semi' | 'placing' | 'final',
+label: 'Semi-final 1 (1A vs 2B)'
+Show game.label:
+
+In a small line under the court name on each court card.
+
+In an extra “Match” column in the fixtures table.
+
+3. Show how teams reached those finals
+When finals games are generated from standings:
+
+For each finals game, in addition to teamAId and teamBId, also store source info, e.g.:
+
+js
+sourceA: '1st Group A',
+sourceB: '2nd Group B'
+Use these strings in the label above and/or in a tooltip:
+
+Hover text: “Team X = 1st Group A”
+
+or inline text: “Team X (1st Group A)”
+
+This makes it obvious why each team is in that match.
+
+4. Separate sections in Fixtures
+In the fixtures table:
+
+Group rows visually:
+
+A header row “Group Stage” above group games.
+
+A header row “Finals & Placement Games” above semis/placements/final.
+
+This can be done with simple extra rows or headings so users can see where group stage ends and finals begin.
+
+5. Do not change the scheduling logic
+Keep the existing mechanics for:
+
+Computing group standings.
+
+Mapping standings to finals fixtures.
+
+Assigning games to rounds and courts.
+
+Only add labels, explanatory text, and “source” strings so humans can see clearly who is playing who and why.

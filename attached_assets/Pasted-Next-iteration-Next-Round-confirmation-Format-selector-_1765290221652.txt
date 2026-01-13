@@ -1,0 +1,106 @@
+Next iteration – "Next Round" confirmation + Format selector (Group Stage vs Round Robin)
+
+Please add these features while keeping all existing logic intact for the current 8-team, 2-court, 2-group + finals format.
+
+1. Confirmation dialog for manual "Next Round"
+When the user manually clicks "Next Round", show an in-page confirmation:
+
+Modal overlay asking:
+
+"Advance to the next round?"
+
+"Current games will be marked as finished."
+
+Buttons: Cancel and Advance.
+
+Behaviour:
+
+Cancel: close modal, do nothing.
+
+Advance: run normal Next Round logic.
+
+Important:
+
+Use a custom modal (same style as celebration/reset), not window.confirm.
+
+Do not show this confirmation when auto-advance triggers at timer 0.
+
+Only for manual button clicks.
+
+2. Small visual polish
+Make the "GROUP" badge on court cards more prominent (filled pill in orange-yellow).
+
+In "Up next" section, use lighter/italic text to distinguish from current game.
+
+3. Tournament Format selector
+Add a Tournament Format choice at the top of the setup area (before the tournament starts):
+
+Radio buttons or dropdown:
+
+"Group Stage (2 groups of 4 + finals)" – default, what you have now.
+
+"Full Round Robin (all teams play each other)" – new simpler format.
+
+Behaviour for each format:
+Format 1: Group Stage (existing)
+Keep exactly as it is now:
+
+8 teams split into Group A and Group B.
+
+Group round-robin within each group.
+
+Finals: semis (1A vs 2B, 1B vs 2A), placement games (3v3, 4v4), 3rd/4th playoff, final.
+
+Group standings during group stage.
+
+Final standings 1-8 after all games.
+
+Format 2: Full Round Robin (new, simpler)
+All 8 teams play each other once.
+
+Total games: 28 (= 8×7/2).
+
+Schedule into rounds using the same "no team twice per round" logic:
+
+Each round has up to 2 games (one per court).
+
+Build rounds greedily to avoid conflicts.
+
+No groups, no finals, no semis.
+
+Display:
+
+Courts show current games as normal.
+
+Fixtures table lists all 28 games with Round, Court, Team A, Score A, Team B, Score B.
+
+One league table with all 8 teams:
+
+Columns: Team, P, W, D, L, GF, GA, GD, Pts.
+
+Sort by Points → GD → GF.
+
+Final standings = same league table once all games finished (positions 1-8).
+
+No celebration overlay needed or optional; just show "Tournament Complete – Final Standings" heading.
+
+Implementation notes:
+Keep both engines separate:
+
+If format is "Group Stage", use existing scheduling/finals logic.
+
+If format is "Full Round Robin", use a simpler pure round-robin scheduler with no finals.
+
+The format choice must be made before starting the tournament; do not allow changing mid-tournament.
+
+Timer, auto-advance, "Up next", score editing, and dark mode must work for both formats.
+
+Please implement:
+
+Manual "Next Round" confirmation modal.
+
+Visual polish (GROUP badge, Up Next styling).
+
+Format selector with two distinct tournament engines (Group Stage and Full Round Robin).
+
+Do not break any existing behaviour; the Group Stage format should work exactly as it does now.

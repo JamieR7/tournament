@@ -1,0 +1,92 @@
+Two things to fix next:
+
+allow correcting scores after the buzzer, and
+
+show a reminder of group‑stage results in the final standings view.
+
+Here’s a prompt you can give Replit:
+
+Allow post‑game score edits + show group‑stage summary in final results
+
+Please make these two improvements without changing the basic format (8 teams, 2 courts, groups + finals).
+
+1. Allow score corrections after final whistle
+Right now, once a game is finished (after the timer / next‑round), scores cannot be changed. That needs to change so referees can fix mistakes.
+
+Requirements:
+
+Court view
+
+Keep the current behaviour where scores can be changed during play.
+
+After a game is marked status: 'finished', you may make the court scores read‑only if you want, but then:
+
+Fixtures table editing
+
+In the Fixtures table, make Score A and Score B cells editable for all games, including finished ones.
+
+When a user edits a score cell:
+
+Update that game’s scoreA / scoreB in the central games[] state.
+
+Mark the game as status: 'finished' (or keep it finished).
+
+Immediately recompute:
+
+Group standings (for group‑stage games).
+
+Final standings (for finals/placement games).
+
+Update any court display that is currently showing that game (if applicable).
+
+No hard lockout
+
+Do not block score changes based on status. The app should treat the fixtures table as the “source of truth” where scores can be corrected at any time.
+
+2. Final results should also remind us of group‑stage performance
+In the Final Standings (1st–8th) table, add a summary of how each team did in the group stage so users can see both their final place and where they came from.
+
+Requirements:
+
+For each team in the final standings (positions 1–8), compute their group‑stage stats from games[] where stage === 'group':
+
+Group (A or B)
+
+Group position (1st–4th in that group)
+
+Group points and goal difference (optional but useful)
+
+Extend each row in the Final Standings table with extra columns, for example:
+
+Pos
+
+Team
+
+Group Pos (e.g. “1st in Group A”)
+
+Group Pts / GD (optional, or a short summary like “7 pts, +5 GD”)
+
+Path (e.g. “Winner Final”, “Lost Semi 2, won 3rd place”, etc.)
+
+Implementation idea:
+
+When you build finalPlacings (the overall 1–8 list), also attach fields like:
+
+js
+group: 'A',
+groupRank: 1,
+groupPoints: 7,
+groupGD: 5
+Use these fields directly in the final table.
+
+Do not remove the separate Group Standings section; keep it. The goal is that the Final Standings table lets you see, in one row per team:
+
+where they finished overall, and
+
+how they did in their group.
+
+Please implement only these changes now:
+
+Editable scores for finished games via the Fixtures table (with standings recomputation).
+
+Final Standings table enriched with each team’s group‑stage result summary.

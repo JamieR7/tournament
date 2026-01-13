@@ -1,0 +1,124 @@
+Next iteration – variable team count (4/6/8), fixed 2 courts, conditional Group Stage option
+
+Please extend the setup to allow different numbers of teams while keeping courts fixed at 2.
+
+Do not change any existing tournament logic; just add flexibility at setup time.
+
+1. Fixed courts, variable teams
+At the top of the setup area:
+
+Remove or hide any "Number of courts" selector.
+
+Always use 2 courts internally.
+
+Add a "Number of teams" dropdown or button group:
+
+Options: 4, 6, or 8.
+
+Default: 8.
+
+2. Conditional tournament format choice
+Show the Tournament Format selector only when it makes sense:
+
+If user selects 4 teams or 6 teams:
+Do not show a format choice.
+
+Automatically use Full Round Robin:
+
+4 teams: 6 games total (3 rounds of 2 games each).
+
+6 teams: 15 games total (8 rounds, some with 1 game if odd).
+
+Show one league table (all teams).
+
+No groups, no finals.
+
+If user selects 8 teams:
+Show the Tournament Format selector with radio buttons:
+
+"Full Round Robin" – all 8 teams play each other, 28 games, one league table.
+
+"Group Stage (2 groups of 4 + finals)" – existing structure with groups A/B, semis, placement, final.
+
+3. Scheduling adjustments per team count
+For each combination:
+
+4 teams, Round Robin (2 courts)
+6 total games.
+
+Schedule into rounds (no team twice per round):
+
+Round 1: 2 games (courts 1 & 2).
+
+Round 2: 2 games.
+
+Round 3: 2 games.
+
+One league table, 4 teams.
+
+Final standings 1–4 based on points/GD.
+
+6 teams, Round Robin (2 courts)
+15 total games.
+
+Schedule into rounds (max 2 games per round):
+
+Some rounds will have 2 games, some will have 1 (when you can't avoid team conflicts).
+
+One league table, 6 teams.
+
+Final standings 1–6.
+
+8 teams, Round Robin (2 courts)
+28 total games (already working).
+
+One league table, 8 teams.
+
+Final standings 1–8.
+
+8 teams, Group Stage (2 courts)
+Keep exactly as now (already working).
+
+2 groups of 4, group round-robins, then finals.
+
+4. Dynamic team name inputs
+When the user changes the team count:
+
+Show exactly that many team name input fields (e.g., 4 fields for 4 teams).
+
+Prefill with "Team 1", "Team 2", etc.
+
+Allow user to rename them before starting.
+
+5. All existing features must work
+For any team count and format:
+
+Timer with auto-advance.
+
+Per-court "Up next".
+
+Score editing (court +/– and fixtures table arrows).
+
+Standings (group or league as appropriate).
+
+Final standings (1–N where N = team count).
+
+Dark mode.
+
+Manual "Next Round" confirmation.
+
+Celebration overlay (optional for round robin, required for group stage).
+
+Please implement:
+
+Fixed 2 courts (no choice).
+
+Team count selector (4, 6, or 8).
+
+Conditional format choice (only show for 8 teams).
+
+Correct scheduling for all combinations.
+
+Ensure all existing features (timer, scores, standings, etc.) adapt to the chosen setup.
+
+Do not break the existing 8-team Group Stage or 8-team Round Robin flows; they should work exactly as before when selected.

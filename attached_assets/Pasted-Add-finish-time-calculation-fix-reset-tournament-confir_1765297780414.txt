@@ -1,0 +1,162 @@
+Add finish-time calculation + fix reset tournament confirmation
+
+Please add finish-time functionality and fix the reset confirmation styling, while keeping all existing features working.
+
+1. Fix "Reset Tournament" confirmation
+Currently the reset uses an ugly browser confirm dialog. Change it to match the "Next Round" confirmation style:
+
+When user clicks "Reset Tournament":
+
+Show an in-page modal (same style as Next Round confirmation)
+
+Message: "Reset tournament?"
+
+Subtext: "This will clear all scores and return to setup."
+
+Buttons: Cancel and Reset
+
+Behaviour:
+
+Cancel: close modal, do nothing
+
+Reset: run the reset logic (clear state, return to setup screen)
+
+Use the same modal component/styling as the Next Round confirmation (centered card, backdrop, not window.confirm).
+
+2. New setup inputs for finish time
+In the setup panel, add:
+
+Start time:
+
+Radio buttons: "Start now" (default) or "Custom start time"
+
+If custom: HH:MM input (24-hour format)
+
+Finish time:
+
+HH:MM input (24-hour format, required)
+
+Label: "Desired finish time"
+
+Place these near the team count / format selectors.
+
+3. Calculate game duration on tournament start
+When the user starts the tournament:
+
+Determine start and finish timestamps:
+
+If "Start now": startTime = Date.now()
+
+If custom: parse the HH:MM and create a timestamp for today (or tomorrow if time has passed)
+
+Parse finish time the same way
+
+Count total rounds based on the schedule:
+
+The schedule is already built per format/team-count
+
+Count how many rounds exist (each round = one timer cycle)
+
+Calculate precise game duration:
+
+js
+totalSeconds = (finishTime - startTime) / 1000
+roundCount = /* number of rounds in schedule */
+gameDurationSeconds = totalSeconds / roundCount
+Use this duration for the timer:
+
+Do NOT round to whole minutes internally
+
+Display as MM:SS
+
+Use this exact duration for each round's countdown
+
+4. Validation and warnings
+Before starting:
+
+If gameDurationSeconds < 120 (less than 2 minutes):
+
+Show warning: "Games would be very short (X seconds). Consider a later finish time."
+
+Still allow starting if user confirms
+
+If finish time is before start time or finish time has already passed:
+
+Show error: "Finish time must be after start time and in the future"
+
+Do not allow starting
+
+5. Display expected finish time during tournament
+In the timer area:
+
+Show a small line: "Expected finish: HH:MM"
+
+Calculate this as:
+
+js
+expectedFinish = startTime + (roundCount × gameDurationSeconds × 1000)
+Update this display if:
+
+Tournament is paused (shift forward by pause duration)
+
+Rounds are manually advanced early (recalculate based on remaining rounds)
+
+6. Pause handling
+When paused:
+
+Track total paused duration
+
+Update "Expected finish" to shift forward by that amount
+
+When resumed, the finish time should reflect the delay
+
+7. Keep manual override available (optional)
+The existing "MINS" input can either:
+
+Be hidden/grayed out when using finish-time mode, or
+
+Show as read-only with a note: "(auto-calculated from finish time)"
+
+For simplicity, it's fine to just auto-calculate and not show the manual MINS input.
+
+8. Works for all formats
+This must work correctly for:
+
+4 teams Round Robin (3 rounds)
+
+6 teams Round Robin (~8 rounds)
+
+8 teams Round Robin (14 rounds)
+
+8 teams Group Stage (9 rounds: 6 group + 3 finals)
+
+The key is counting rounds accurately from the pre-built schedule.
+
+9. Existing features unchanged
+Auto-advance still works (uses the calculated game duration)
+
+Manual Next Round still works
+
+All scoring, standings, celebration logic unchanged
+
+Timer sounds (beeps, buzzer) unchanged
+
+Dark mode unchanged
+
+Please implement:
+
+Replace reset tournament browser confirm with styled in-page modal matching Next Round style
+
+Start time and finish time inputs in setup
+
+Auto-calculate game duration based on total available time ÷ number of rounds
+
+Use precise duration (seconds) for timer, display as MM:SS
+
+Show "Expected finish" during tournament that updates with pauses
+
+Validation/warnings for very short games or invalid times
+
+Works for all team counts and formats (4/6/8 teams, Round Robin/Group Stage)
+
+Do not break any existing timer, scoring, or tournament flow

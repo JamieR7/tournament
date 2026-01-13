@@ -1,0 +1,60 @@
+Feature: End‑of‑Tournament Celebration Screen Before Showing Final Table
+
+Please keep the current logic for detecting when all games are finished and for computing the final standings. Now add a simple celebration step between “tournament finished” and “show final standings”.
+
+1. Detect tournament completion (reuse existing check)
+When every game in games[] has status === 'finished', the app should:
+
+Stop the timer if it is still running.
+
+Trigger an end‑of‑tournament state, e.g. tournamentComplete = true.
+
+2. Celebration overlay
+When tournamentComplete === true and before the final table is shown:
+
+Display a full‑width overlay panel over the courts/fixtures area with:
+
+Large text:
+
+“Congratulations everybody!”
+
+On the next line (smaller): “High‑five the other teams; we’ll see the final results soon.”
+
+A big button: “Click here to reveal the final table”.
+
+The rest of the page (courts, fixtures, standings) should be dimmed but still visible in the background.
+
+3. Simple “fireworks” animation
+On the celebration overlay, add a lightweight fireworks/confetti effect, for example:
+
+CSS/JS confetti particles falling from the top, or
+
+Simple expanding circles / bursts using CSS animations or canvas.
+
+Requirements:
+
+Animation should run smoothly for a few seconds in a loop while the overlay is visible.
+
+It should not interfere with the underlying state (no timers, no extra game logic).
+
+4. Reveal final results on click
+When the user clicks “Click here to reveal the final table”:
+
+Hide the celebration overlay and stop the fireworks animation.
+
+Scroll (if needed) to the Final Standings section.
+
+Show the final standings table (which you already compute) clearly—this table should only become visible at this moment.
+
+If the user reloads after completion, it is acceptable for the final table to be shown directly, but during normal flow the overlay should appear first.
+
+5. Keep everything else unchanged
+Do not change how standings are calculated or how fixtures are displayed.
+
+Only add:
+
+The end‑of‑tournament detection hook.
+
+The celebration overlay with message and confetti.
+
+The “click to reveal final table” behaviour.

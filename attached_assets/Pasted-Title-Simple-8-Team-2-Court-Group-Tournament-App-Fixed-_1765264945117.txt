@@ -1,0 +1,259 @@
+Title: Simple 8‑Team, 2‑Court Group Tournament App (Fixed Format)
+
+Build a single-page web app (HTML, CSS, JavaScript or React) for a fixed tournament format:
+
+Exactly 8 teams.
+
+Exactly 2 courts.
+
+One fixed format:
+
+Group stage: 2 groups of 4 (Group A, Group B), round‑robin within each group.
+
+Finals:
+
+SF1: 1st A vs 2nd B
+
+SF2: 1st B vs 2nd A
+
+3rd place playoff: losers of SF1 & SF2
+
+Final: winners of SF1 & SF2
+
+7th/8th: 4th A vs 4th B
+
+5th/6th: 3rd A vs 3rd B
+
+No options to change number of teams, courts, or format. Focus on correctness and clarity.
+
+1. Core Requirements (no “smart” extras)
+No “finish by” time calculation.
+
+One round timer only (user sets game length in minutes).
+
+Manual Start/Pause/Reset timer control.
+
+Timer just runs each round; it does not need to automatically advance rounds.
+
+The user advances rounds manually via a “Next Round” button.
+
+The goal is a clean, reliable control panel for a PE teacher, not an all‑singing scheduler.
+
+2. State Model
+Use a clear JS/React state model, for example:
+
+js
+const teams = [
+  { id: 1, name: 'Team 1', group: 'A' },
+  { id: 2, name: 'Team 2', group: 'A' },
+  { id: 3, name: 'Team 3', group: 'A' },
+  { id: 4, name: 'Team 4', group: 'A' },
+  { id: 5, name: 'Team 5', group: 'B' },
+  { id: 6, name: 'Team 6', group: 'B' },
+  { id: 7, name: 'Team 7', group: 'B' },
+  { id: 8, name: 'Team 8', group: 'B' }
+];
+
+const games = [
+  // fill with group games first, then finals
+  // { id, stage: 'group' | 'semi' | 'final' | 'placing', group?: 'A'|'B', roundNumber, courtId, teamAId, teamBId, scoreA, scoreB, status }
+];
+
+const courts = [
+  { id: 1, name: 'Court 1', currentGameId: null },
+  { id: 2, name: 'Court 2', currentGameId: null }
+];
+All scores live in games[] only.
+
+3. Predefined Schedule (hard‑code rounds to avoid bugs)
+Precompute and hard‑code the schedule for 8 teams, 2 courts, 2 groups of 4.
+
+Example structure:
+
+Group stage rounds (R1–R6):
+
+Each round has 2 games, one per court.
+
+Ensure no team appears twice in a round.
+
+After group stage:
+
+Compute standings in each group.
+
+Map standings to the finals fixtures listed above.
+
+Put those fixtures into later rounds (R7–R10), again 2 games per round.
+
+Implementation approach:
+
+For group stage, you may hard‑code fixtures (there are standard patterns for 4‑team round robin) to guarantee no conflicts.
+
+For finals, generate fixtures dynamically from standings once group stage is done, then assign them to later rounds.
+
+4. Layout
+Top to bottom:
+
+Header & Timer
+
+Title: “PE Tournament Planner”.
+
+Large central timer MM:SS.
+
+Minutes input (e.g., 10) and Start / Pause / Reset buttons.
+
+A small label: “Round X / Y”.
+
+Courts row
+
+Two court cards side‑by‑side, centred.
+
+Each shows:
+
+Court name.
+
+Current game: Team A vs Team B.
+
+Score A and Score B in large font.
+
+– / + buttons for each score:
+
+Layout: [–] SCORE [+] in one line, with no overlap.
+
+Use flexbox with gap instead of absolute positioning.
+
+A small “Stage” tag: e.g., “Group A”, “Semi‑final”, “Final”.
+
+Next Round controls
+
+Below courts: a “Next Round” button.
+
+When clicked:
+
+Save current scores to games[].
+
+Mark current round games as finished.
+
+Load the next round’s two games into the courts.
+
+Do not reset scores automatically; scores persist in games[].
+
+Fixtures table
+
+Below courts:
+
+Columns: Round, Court, Stage, Team A, Score A, Team B, Score B, Status.
+
+Read scores from games[].
+
+No editing needed here for v1; it’s just a view.
+
+Standings
+
+Two tables side‑by‑side:
+
+Group A standings.
+
+Group B standings.
+
+Columns: Team, P, W, D, L, GF, GA, GD, Pts.
+
+Recalculate using only finished group‑stage games (stage = 'group').
+
+No tabs, no hidden sections—everything on one scrollable dashboard.
+
+5. Timer Behaviour (simplified)
+Timer length set by minutes input.
+
+Start:
+
+If stopped, set remaining = minutes * 60 and start countdown.
+
+Countdown:
+
+Use absolute time (endTime = Date.now() + remaining*1000) so tab switching does not break the timer.
+
+Update display every ~200 ms via requestAnimationFrame or setInterval.
+
+At 10 seconds:
+
+Turn timer red & play a short beep each second.
+
+At 0:
+
+Play loud sports‑style buzzer.
+
+Stop timer (user then decides when to press “Next Round”).
+
+No auto‑advance of rounds; user controls that.
+
+6. Score Handling
+All score changes (+/–) update the corresponding game object in games[].
+
+Court UI reads from that game.
+
+Fixtures and standings also read from games[].
+
+When “Next Round” is pressed, you do not clear scores; you just change which game each court is showing.
+
+7. Group Standings and Finals Mapping
+Standings calculation (per group)
+For group stage (stage = 'group'):
+
+For each team in the group:
+
+P = number of group games played.
+
+W, D, L, GF, GA, GD, Pts (Win 3, Draw 1, Loss 0).
+
+Sort by:
+
+Points
+
+Goal difference
+
+Goals for
+
+Team name (as tie‑breaker).
+
+Finals generation
+Once all group-stage games are finished:
+
+Determine rank 1–4 for Group A and Group B.
+
+Create finals games in games[] with stage tags:
+
+semi for SF1 and SF2.
+
+placing for 3rd/4th and 5th/6th.
+
+final for the championship game.
+
+Place them into later round numbers (R7–R10) and assign them to courts (2 games per round).
+
+Courts UI and fixtures should then show these rounds when the user clicks “Next Round”.
+
+You do not need complex validation logic—since the number of teams, groups, and finals structure is fixed, you can design the round layout manually and just plug the correct teams into those slots.
+
+8. UX Polishing
+Use clear fonts and large sizes for timer and scores (projector friendly).
+
+High contrast white background and dark text.
+
+Simple reset:
+
+One “Reset Tournament” button with an inline confirmation (“Reset / Cancel”) instead of window.confirm.
+
+9. What Not To Implement
+To keep this robust:
+
+No full round robin option.
+
+No variable number of teams or courts.
+
+No automatic “finish by time X” computation.
+
+No complex “Next up” beyond “games in this round” (the fixed schedule already defines sequence).
+
+Focus on this one format only, done cleanly and reliably.
+
+Use this as the complete spec for the new app.

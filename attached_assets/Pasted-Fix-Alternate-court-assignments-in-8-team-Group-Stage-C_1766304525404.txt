@@ -1,0 +1,81 @@
+Fix: Alternate court assignments in 8-team Group Stage
+
+Currently in the 8-team Group Stage format, teams play all their games on the same court throughout the tournament. This needs to change so teams experience different courts.
+
+Goal:
+Keep the exact same match schedule (who plays who, and when) but rotate which court each game is played on so teams alternate between courts.
+
+Implementation:
+After building the rounds with games, when assigning games to specific courts:
+
+Current behavior (problem):
+js
+// Round 1:
+Game 1 (Team 1 vs Team 2) → Court 1
+Game 2 (Team 5 vs Team 6) → Court 2
+
+// Round 2:
+Game 3 (Team 3 vs Team 4) → Court 1  // same pattern repeats
+Game 4 (Team 7 vs Team 8) → Court 2
+Result: Group A teams always play on Court 1, Group B teams always on Court 2.
+
+New behavior (solution):
+Use a round-based offset to rotate court assignments:
+
+js
+for (let roundIndex = 0; roundIndex < rounds.length; roundIndex++) {
+  const gamesInRound = rounds[roundIndex];
+  const courtOffset = roundIndex % courtCount; // rotates 0, 1, 0, 1, ... for 2 courts
+  
+  gamesInRound.forEach((game, gameIndex) => {
+    const courtIndex = (gameIndex + courtOffset) % courtCount;
+    const courtId = courtIndex + 1; // courts are 1-indexed
+    game.courtId = courtId;
+  });
+}
+Example with 2 courts:
+Round 1 (offset = 0):
+
+Game A → Court 1
+
+Game B → Court 2
+
+Round 2 (offset = 1):
+
+Game C → Court 2 (shifted)
+
+Game D → Court 1 (shifted)
+
+Round 3 (offset = 0):
+
+Game E → Court 1
+
+Game F → Court 2
+
+Round 4 (offset = 1):
+
+Game G → Court 2
+
+Game H → Court 1
+
+Result:
+Teams from both groups experience both courts
+
+Match pairings and timing unchanged
+
+Conflict-free scheduling still maintained
+
+Court queues and "Up next" still work correctly
+
+Apply to all formats:
+This should work for:
+
+8-team Group Stage (primary need)
+
+8-team Round Robin
+
+6-team and 4-team Round Robin
+
+For any multi-court tournament, alternate the court assignments per round.
+
+Please implement this court rotation while keeping all match scheduling, timing, scoring, and UI features unchanged.
